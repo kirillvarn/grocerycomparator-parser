@@ -4,7 +4,7 @@ import schedule
 def test():
     print("test")
 
-schedule.every().minute.at(":30").do(test)
+schedule.every(10).seconds.do(test)
 
 # schedule.every().day.at("10:00", "Europe/Tallinn").do(current_products.update_current_products
 
