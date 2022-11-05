@@ -2,8 +2,7 @@ from datetime import datetime
 import psycopg2
 from colorama import Fore, Style
 import time
-from credentials import user_data
-
+import os
 # exception handling
 from psycopg2 import errors
 
@@ -19,10 +18,10 @@ def connect(retries=0, db="products"):
     try:
         CONNECTION = psycopg2.connect(
             dbname=db,
-            user=user_data["username"],
-            password=user_data["password"],
-            host=user_data["host"],
-            port=user_data["port"],
+            user=os.getenv("PGUSER"),
+            password=os.getenv("PGPASSWORD")
+            host=os.getenv("PGHOST")
+            port=os.getenv("PGPORT")
         )
         print(f"{Fore.GREEN}[INFO] server.connect.{db}.ok!{Style.RESET_ALL}")
         retries = 0
