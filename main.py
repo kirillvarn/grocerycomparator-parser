@@ -1,4 +1,4 @@
-# import naive, products, schedule, current_products
+import naive, products, current_products
 import schedule, time
 
 schedule.every().day.at("10:00", "Europe/Tallinn").do(current_products.update_current_products)
