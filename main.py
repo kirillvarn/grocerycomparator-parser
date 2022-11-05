@@ -1,12 +1,12 @@
 # import naive, products, schedule, current_products
-import schedule
+import schedule, time
 
-def test():
-    print("test")
+schedule.every().day.at("10:00", "Europe/Tallinn").do(current_products.update_current_products
 
-schedule.every(10).seconds.do(test)
+schedule.every(3).days.at("10:00", "Europe/Tallinn").do(naive.run)
+schedule.every(3).days.at("10:00", "Europe/Tallinn").do(products.run)
 
-# schedule.every().day.at("10:00", "Europe/Tallinn").do(current_products.update_current_products
-
-# schedule.every(3).days.at("10:00", "Europe/Tallinn").do(naive.run)
-# schedule.every(3).days.at("10:00", "Europe/Tallinn").do(products.run)
+while True:
+    n = schedule.idle_seconds()
+    time.sleep(n)
+    schedule.run_pending()
