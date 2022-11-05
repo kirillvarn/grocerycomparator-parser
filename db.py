@@ -19,8 +19,8 @@ def connect(retries=0, db="products"):
         CONNECTION = psycopg2.connect(
             dbname=db,
             user=os.getenv("PGUSER"),
-            password=os.getenv("PGPASSWORD")
-            host=os.getenv("PGHOST")
+            password=os.getenv("PGPASSWORD"),
+            host=os.getenv("PGHOST"),
             port=os.getenv("PGPORT")
         )
         print(f"{Fore.GREEN}[INFO] server.connect.{db}.ok!{Style.RESET_ALL}")
