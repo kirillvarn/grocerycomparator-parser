@@ -80,7 +80,7 @@ async def scrap():
             await asyncio.gather(*tasks)
 
 def main(method):
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     try:
         asyncio.run(scrap())
     except Exception as e:
@@ -92,6 +92,6 @@ def main(method):
 
 
 def current_products() -> None:
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(scrap())
     insert_current_products(p_array, "prisma")

@@ -73,7 +73,7 @@ async def gatherData():
             await asyncio.gather(*tasks)
 
 def main(method):
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(gatherData())
     if (method == "naive"):
         naiveHandleDB(p_array, 'rimi')
@@ -81,6 +81,6 @@ def main(method):
         handleDB(p_array, 'rimi')
 
 def current_products() -> None:
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(gatherData())
     insert_current_products(p_array, "rimi")
