@@ -1,8 +1,8 @@
-import naive, products, current_products
+import naive, products, update_current
 import schedule, time, datetime
 
 
-current_products.update_current_products()
+update_current.update_current_products()
 naive.run()
 products.run()
 
