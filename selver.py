@@ -5,7 +5,7 @@ import os
 
 # db
 from db import *
-from current_products import *
+from current_products import insert_current_products
 
 # if os.name == "nt":
 #     loop = asyncio.ProactorEventLoop()

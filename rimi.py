@@ -13,7 +13,7 @@ import os
 
 # db
 from db import handleDB, naiveHandleDB
-from current_products import *
+from current_products import insert_current_products
 
 # global variables such as parsing URL, requests
 BASE_URL = 'https://www.rimi.ee'
