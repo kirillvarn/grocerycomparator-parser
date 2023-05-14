@@ -2,7 +2,6 @@ from datetime import datetime
 import psycopg2
 from colorama import Fore, Style
 import time
-from pypika import Query, Table, Schema, functions as fn
 
 from psycopg2 import extras, sql
 
@@ -320,10 +319,6 @@ def naiveHandleDB(products, shop):
     cursor.close()
     conn.close()
     print(f"{Fore.BLUE}[INFO][NAIVE] Done populating {shop}{Style.RESET_ALL}")
-
-
-schema = Schema("public")
-current_products = Table("products", schema=schema)
 
 
 def insert_current_products(products: list, shop: str) -> None:
