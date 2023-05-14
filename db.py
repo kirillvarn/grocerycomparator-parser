@@ -349,7 +349,7 @@ def insert_current_products(products: list, shop: str) -> None:
     ]
 
     insert_q = "update current_products set price=%s, discount=%s, inserted_at=%s where id = %s and price != %s; insert into current_products values (%s, %s, %s, %s, %s, %s) on conflict (id) do nothing;"
-    
+
     # insert into products
 
     extras.execute_batch(cursor, insert_q, data)

@@ -3,7 +3,7 @@ from requests_html import AsyncHTMLSession
 import asyncio
 
 # db
-from parser.db import handleDB, naiveHandleDB, insert_current_products
+from db import handleDB, naiveHandleDB, insert_current_products
 
 
 # if os.name == "nt":
