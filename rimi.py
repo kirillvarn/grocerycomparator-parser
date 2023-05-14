@@ -4,7 +4,7 @@ import re
 import asyncio
 import aiohttp
 
-from parser.db import handleDB, naiveHandleDB, insert_current_products
+from db import handleDB, naiveHandleDB, insert_current_products
 
 # global variables such as parsing URL, requests
 BASE_URL = 'https://www.rimi.ee'

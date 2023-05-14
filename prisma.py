@@ -15,7 +15,7 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # db
-from parser.db import *
+from db import *
 
 ### constants and global variables ###
 

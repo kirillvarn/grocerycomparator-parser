@@ -2,7 +2,7 @@ import asyncio
 import aiohttp
 
 # db
-from parser.db import *
+from db import *
 
 # if os.name == "nt":
 #     loop = asyncio.ProactorEventLoop()

@@ -1,5 +1,5 @@
 import requests as req
-from parser.db import *
+from db import *
 from current_products import *
 
 '''
