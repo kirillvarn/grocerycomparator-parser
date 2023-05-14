@@ -2,6 +2,11 @@ import requests as req
 from parser.db import *
 from current_products import *
 
+'''
+DEPRECATED.
+Coop does not provide API anymore.
+'''
+
 # disable warnings
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
