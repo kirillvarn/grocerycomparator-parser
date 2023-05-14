@@ -1,9 +1,5 @@
-'''
-    DEPRECATED - Coop provides no API/online store anymore.
-'''
-
 import requests as req
-from db import *
+from parser.db import *
 from current_products import *
 
 # disable warnings

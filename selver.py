@@ -1,11 +1,8 @@
-import requests as req
 import asyncio
 import aiohttp
-import os
 
 # db
-from db import *
-from current_products import insert_current_products
+from parser.db import *
 
 # if os.name == "nt":
 #     loop = asyncio.ProactorEventLoop()
@@ -38,7 +35,7 @@ async def getAPIData(session, size):
             p_array.append(
                 {
                     "id": str(item["_source"]["stock"]["item_id"]),
-                    "name": f"{item['_source']['stock']['item_id']}, {item['_source']['name']}",
+                    "name": f"{item['_source']['name']}",
                     "price": item["_source"]["final_price_incl_tax"],
                     "discount": discount,
                 }
@@ -57,7 +54,7 @@ async def gatherData():
 
 
 def main(method):
-    # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
     asyncio.run(gatherData())
     if method == "naive":
         naiveHandleDB(p_array, "selver")
@@ -66,6 +63,6 @@ def main(method):
 
 
 def current_products() -> None:
-    # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
     asyncio.run(gatherData())
     insert_current_products(p_array, "selver")

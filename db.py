@@ -2,7 +2,13 @@ from datetime import datetime
 import psycopg2
 from colorama import Fore, Style
 import time
+from pypika import Query, Table, Schema, functions as fn
+
+from psycopg2 import extras, sql
+
+# from credentials import user_data
 import os
+
 # exception handling
 from psycopg2 import errors
 
@@ -10,19 +16,32 @@ UniqueViolation = errors.lookup("23505")
 
 
 DATE = datetime.today().strftime("%Y-%m-%d")
+DEV = os.environ.get("FLASK_ENV") == "development"
 RETRY_LIMIT = 50
 
 
 def connect(retries=0, db="products"):
     print(f"{Fore.GREEN}[INFO] server.connecting.{db} {Style.RESET_ALL}")
+    if not DEV:
+        user = os.getenv("PGUSER")
+        password = os.getenv("PGPASSWORD")
+        host = os.getenv("PGHOST")
+        port = os.getenv("PGPORT")
+    else:
+        user = "postgres"
+        password = "postgres"
+        host = "localhost"
+        port = "5432"
+        db = "product_dev"
     try:
         CONNECTION = psycopg2.connect(
             dbname=db,
-            user=os.getenv("PGUSER"),
-            password=os.getenv("PGPASSWORD"),
-            host=os.getenv("PGHOST"),
-            port=os.getenv("PGPORT")
+            user=user,
+            password=password,
+            host=host,
+            port=port,
         )
+
         print(f"{Fore.GREEN}[INFO] server.connect.{db}.ok!{Style.RESET_ALL}")
         retries = 0
         return CONNECTION
@@ -282,57 +301,73 @@ def naiveHandleDB(products, shop):
     conn.set_client_encoding("UTF8")
     cursor = conn.cursor()
 
-    query_s = 'CREATE TABLE IF NOT EXISTS "%s" (id integer, name varchar(255), price FLOAT, shop varchar(16), discount BOOLEAN);'
+    data = [
+        (
+            entry["id"],
+            entry["name"],
+            entry["price"] or 0,
+            shop,
+            entry["discount"],
+            DATE,
+        )
+        for entry in products
+    ]
+    query_s = "insert into products values (%s, %s, %s, %s, %s, %s)"
 
-    cursor.execute(query_s, (DATE,))
+    extras.execute_batch(cursor, query_s, data)
+
     conn.commit()
     cursor.close()
+    conn.close()
+    print(f"{Fore.BLUE}[INFO][NAIVE] Done populating {shop}{Style.RESET_ALL}")
 
+
+schema = Schema("public")
+current_products = Table("products", schema=schema)
+
+
+def insert_current_products(products: list, shop: str) -> None:
+    conn = connect(db="naive_products")
     cursor = conn.cursor()
 
-    for product in products:
-        if shop == "selver":
-            query_s = 'insert into "%s" values (%s, %s, %s, %s, %s)'
+    data = [
+        (
+            round(entry["price"], 2) or 0,
+            entry["discount"],
+            DATE,
+            entry["id"] + shop[0],
+            round(entry["price"], 2) or 0,
 
-            try:
-                price = float(product["price"])
-            except:
-                price = 0
-            try:
-                cursor.execute(
-                    query_s,
-                    (
-                        DATE,
-                        product["id"],
-                        product["name"],
-                        price,
-                        shop,
-                        product["discount"],
-                    ),
-                )
-            except psycopg2.errors.UniqueViolation as uv:
-                pass
-            except Exception as e:
-                raise e
-        else:
-            query_s = 'insert into "%s" values (null, %s, %s, %s, %s)'
+            entry["id"] + shop[0],
+            entry["name"],
+            round(entry["price"], 2) or 0,
+            shop,
+            entry["discount"],
+            DATE
+        )
+        for entry in products
+    ]
 
-            try:
-                price = float(product["price"])
-            except:
-                price = 0
-            try:
-                cursor.execute(
-                    query_s, (DATE, product["name"], price, shop, product["discount"])
-                )
-            except Exception as e:
-                raise e
+    insert_q = "update current_products set price=%s, discount=%s, inserted_at=%s where id = %s and price != %s; insert into current_products values (%s, %s, %s, %s, %s, %s) on conflict (id) do nothing;"
+    
+    # insert into products
 
-        # conn.commit()
+    extras.execute_batch(cursor, insert_q, data)
 
-    cursor.close()
-    print(f"{Fore.BLUE}[INFO][NAIVE] Done populating {shop}{Style.RESET_ALL}")
-    # adding current date to the DB
     conn.commit()
+    cursor.close()
 
+    conn.close()
+    print(f"{Fore.BLUE}[INFO][CURRENT] Done populating {shop}{Style.RESET_ALL}")
+
+
+def log_products():
+    conn = connect(db="naive_products")
+    cursor = conn.cursor()
+
+    copy_q = "insert into products (id, name, price, shop, discount, inserted_at) select id, name, price, shop, discount, inserted_at from current_products where inserted_at = %s"
+
+    cursor.execute(copy_q, (DATE,))
+    conn.commit()
+    cursor.close()
     conn.close()

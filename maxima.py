@@ -1,11 +1,9 @@
 from requests_html import HTMLSession
 from requests_html import AsyncHTMLSession
 import asyncio
-import os
 
 # db
-from db import handleDB, naiveHandleDB
-from current_products import insert_current_products
+from parser.db import handleDB, naiveHandleDB, insert_current_products
 
 
 # if os.name == "nt":
@@ -35,9 +33,7 @@ def getProductData(html_code):
         price = html_code.find("span.b-product-price-current-number")[0].text[1:]
     except:
         price = 0
-    if len(name) > 255:
-        name = name[0:254]
-        print(name)
+
     return {"id": index, "name": name, "price": price, "discount": discount}
 
 
@@ -70,7 +66,7 @@ async def gatherData():
 
 
 def main(method):
-    # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
     asyncio.run(gatherData())
     if method == "naive":
         naiveHandleDB(p_array, "maxima")
@@ -78,6 +74,6 @@ def main(method):
         handleDB(p_array, "maxima")
 
 def current_products() -> None:
-    # asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
     asyncio.run(gatherData())
     insert_current_products(p_array, "maxima")

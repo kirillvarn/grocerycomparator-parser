@@ -1,18 +1,38 @@
-import naive, products, update_current
-import schedule, time, datetime
+import naive, products
 
+from datetime import date, datetime
+import db
 
-update_current.update_current_products()
+DAY = date.today().timetuple().tm_yday
+DAY = int(DAY)
+
+th_list = []
+#th_list.append(Thread(target=selver.current_products))
+#th_list.append(Thread(target=rimi.current_products))
+#th_list.append(Thread(target=prisma.current_products))
+#th_list.append(Thread(target=maxima.current_products))
+#th_list.append(Thread(target=coop.current_products))
+#
+#for i in th_list:
+#    i.start()
+#
+#for i in th_list:
+#    i.join()
+
+def clear_db():
+    conn = db.connect()
+    cursor = conn.cursor()
+
+    DATE = datetime.today().strftime("%Y-%m-%d")
+    q = 'DROP TABLE IF EXISTS "%s";'
+    q_2 = 'DELETE FROM public.updatedates WHERE u_name = %s'
+
+    cursor.execute(q, (DATE, ))
+    cursor.execute(q_2, (DATE, ))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+clear_db()
 naive.run()
 products.run()
-
-# schedule.every().day.at("10:00").do(current_products.update_current_products)
-
-# schedule.every(3).days.at("10:00").do(naive.run)
-# schedule.every(3).days.at("10:00").do(products.run)
-
-# while True:
-#     n = schedule.idle_seconds()
-#     print(f"Starting schedule in {datetime.timedelta(seconds=n)}")
-#     time.sleep(n)
-#     schedule.run_pending()
