@@ -2,6 +2,7 @@ import maxima, rimi, selver, prisma
 from threading import Thread
 
 from db import log_products
+from apscheduler.events import *
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
