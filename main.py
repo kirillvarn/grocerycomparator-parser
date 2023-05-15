@@ -4,7 +4,7 @@ from threading import Thread
 from db import log_products
 from apscheduler.events import *
 
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 from datetime import datetime, timedelta
 
 def job_init_listener(event):
@@ -38,7 +38,8 @@ else:
     time_d = timedelta(days=1)
     next_4am = datetime(now_dt.year, now_dt.month, now_dt.day, 4) + time_d
 
-sched = BackgroundScheduler(daemon=True)
+sched = BlockingScheduler()
 sched.add_job(run, 'interval', start_date=next_4am, days=1)
+print(f"Next parser: {next_4am}")
 sched.add_listener(job_init_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
 sched.start()
