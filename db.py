@@ -344,7 +344,7 @@ def insert_current_products(products: list, shop: str) -> None:
         for entry in products
     ]
 
-    insert_q = "update current_products set price=%s, discount=%s, inserted_at=%s where id = %s and price != %s; insert into current_products values (%s, %s, %s, %s, %s, %s) on conflict (id) do nothing;"
+    insert_q = "update current_products set price=round(%s, 2), discount=%s, inserted_at=%s where id = %s and price != %s; insert into current_products values (%s, %s, %s, %s, %s, %s) on conflict (id) do nothing;"
 
     # insert into products
 

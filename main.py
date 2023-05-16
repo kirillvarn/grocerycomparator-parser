@@ -1,22 +1,21 @@
 import maxima, rimi, selver, prisma
 from colorama import Fore, Style
 from threading import Thread
-
+import multiprocessing as mp
 from db import log_products
-from apscheduler.events import *
-
-from apscheduler.schedulers.blocking import BlockingScheduler
-from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
+#from apscheduler.events import *
+import time
+#from apscheduler.schedulers.blocking import BlockingScheduler
+#from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from datetime import datetime, timedelta
 
-now_dt = datetime.now()
-next_4am = None
+def get_next_event(time: datetime) -> datetime:
+    return time + timedelta(days=1)
+now = datetime.now()
+t = datetime(year=now.year, month=now.month, day=now.day, hour=4)
 
-if now_dt.hour < 4 and now_dt.hour > 0:
-    next_4am = datetime(now_dt.year, now_dt.month, now_dt.day, 4)
-else:
-    time_d = timedelta(days=1)
-    next_4am = datetime(now_dt.year, now_dt.month, now_dt.day, 4) + time_d
+if now.hour > 4 or now.hour < 0:
+    t = t + timedelta(days=1)
 
 def run():
     th_list = []
@@ -33,18 +32,21 @@ def run():
         i.join()
 
     log_products()
-    print(f"{Fore.BLUE}[INFO] Done parsing! Next parsing's at {next_4am + timedelta(days=1)}{Style.RESET_ALL}")
+    print(f"{Fore.BLUE}[INFO] Done parsing! Next parsing's at {get_next_event(t) + timedelta(days=1)}{Style.RESET_ALL}")
 
 
+print(f"Starting parsing at {t}!")
+until_starting = t - now
+seconds_until = (until_starting.seconds) + (until_starting.days * 24 * 60 * 60)
 
+time.sleep(seconds_until)
+while True:    
+    subprocess = mp.Process(target=run)
+    subprocess.start()
+    subprocess.join()
+    subprocess.terminate()
+    
+    next_at = get_next_event(t)
+    delta_seconds = (next_at - t).days * 24 * 60 * 60
+    time.sleep(delta_seconds)
 
-sched = BlockingScheduler(
-    executors={
-        'threadpool': ThreadPoolExecutor(max_workers=6),
-        'processpool': ProcessPoolExecutor(max_workers=2)
-    }
-)
-
-sched.add_job(run, 'interval', start_date=next_4am, days=1, replace_existing=True, id="parse")
-print(f"Next parser: {next_4am}")
-sched.start()
