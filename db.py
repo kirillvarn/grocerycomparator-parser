@@ -328,15 +328,15 @@ def insert_current_products(products: list, shop: str) -> None:
 
     data = [
         (
-            round(cast_to_int(entry["price"]), 2) or 0,
+            round(cast_to_numeric(entry["price"]), 2) or 0,
             entry["discount"],
             DATE,
             entry["id"] + shop[0],
-            round(cast_to_int(entry["price"]), 2) or 0,
+            round(cast_to_numeric(entry["price"]), 2) or 0,
 
             entry["id"] + shop[0],
             entry["name"],
-            round(cast_to_int(entry["price"]), 2) or 0,
+            round(cast_to_numeric(entry["price"]), 2) or 0,
             shop,
             entry["discount"],
             DATE
@@ -368,8 +368,9 @@ def log_products():
     cursor.close()
     conn.close()
 
-def cast_to_int(castable):
+def cast_to_numeric(castable):
     try:
-        return int(castable)
-    except:
+        return float(castable)
+    except Exception as e:
+        print(e)
         return 0
