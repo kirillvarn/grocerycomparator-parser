@@ -40,11 +40,11 @@ def run():
 
 sched = BlockingScheduler(
     executors={
-        'threadpool': ThreadPoolExecutor(max_workers=9),
-        'processpool': ProcessPoolExecutor(max_workers=3)
+        'threadpool': ThreadPoolExecutor(max_workers=6),
+        'processpool': ProcessPoolExecutor(max_workers=2)
     }
 )
 
-sched.add_job(run, 'interval', start_date=next_4am, days=1)
+sched.add_job(run, 'interval', start_date=next_4am, days=1, replace_existing=True, id="parse")
 print(f"Next parser: {next_4am}")
 sched.start()
