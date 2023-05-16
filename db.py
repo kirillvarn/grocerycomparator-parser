@@ -324,18 +324,19 @@ def naiveHandleDB(products, shop):
 def insert_current_products(products: list, shop: str) -> None:
     conn = connect(db="naive_products")
     cursor = conn.cursor()
+    price = 0
 
     data = [
         (
-            round(entry["price"], 2) or 0,
+            round(cast_to_int(entry["price"]), 2) or 0,
             entry["discount"],
             DATE,
             entry["id"] + shop[0],
-            round(entry["price"], 2) or 0,
+            round(cast_to_int(entry["price"]), 2) or 0,
 
             entry["id"] + shop[0],
             entry["name"],
-            round(entry["price"], 2) or 0,
+            round(cast_to_int(entry["price"]), 2) or 0,
             shop,
             entry["discount"],
             DATE
@@ -366,3 +367,9 @@ def log_products():
     conn.commit()
     cursor.close()
     conn.close()
+
+def cast_to_int(castable):
+    try:
+        return int(castable)
+    except:
+        return 0
