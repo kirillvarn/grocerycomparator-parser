@@ -38,6 +38,7 @@ until_starting = t - now
 seconds_until = (until_starting.seconds) + (until_starting.days * 24 * 60 * 60)
 
 prev_at = t
+next_at = None
 
 time.sleep(seconds_until)
 while True:
@@ -46,10 +47,9 @@ while True:
     subprocess.join()
     subprocess.terminate()
 
-    next_at = get_next_event(t)
-    prev_at = next_at
+    next_at = get_next_event(prev_at)
 
-    print(f"{Fore.BLUE}[INFO] Done parsing! Next parsing's at {prev_at}{Style.RESET_ALL}")
-    delta_seconds = (next_at - t).days * 24 * 60 * 60
+    print(f"{Fore.BLUE}[INFO] Done parsing! Next parsing's at {next_at}{Style.RESET_ALL}")
+    delta_seconds = (next_at - prev_at).days * 24 * 60 * 60
     time.sleep(delta_seconds)
 
