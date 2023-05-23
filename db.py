@@ -18,6 +18,7 @@ DATE = datetime.today().strftime("%Y-%m-%d")
 DEV = os.environ.get("FLASK_ENV") == "development"
 RETRY_LIMIT = 50
 
+print(f"DATE: {DATE}")
 
 def connect(retries=0, db="products"):
     print(f"{Fore.GREEN}[INFO] server.connecting.{db} {Style.RESET_ALL}")

@@ -32,21 +32,24 @@ def run():
         i.join()
 
     log_products()
-    print(f"{Fore.BLUE}[INFO] Done parsing! Next parsing's at {get_next_event(t) + timedelta(days=1)}{Style.RESET_ALL}")
-
 
 print(f"Starting parsing at {t}!")
 until_starting = t - now
 seconds_until = (until_starting.seconds) + (until_starting.days * 24 * 60 * 60)
 
+prev_at = t
+
 time.sleep(seconds_until)
-while True:    
+while True:
     subprocess = mp.Process(target=run)
     subprocess.start()
     subprocess.join()
     subprocess.terminate()
-    
+
     next_at = get_next_event(t)
+    prev_at = next_at
+
+    print(f"{Fore.BLUE}[INFO] Done parsing! Next parsing's at {prev_at}{Style.RESET_ALL}")
     delta_seconds = (next_at - t).days * 24 * 60 * 60
     time.sleep(delta_seconds)
 
