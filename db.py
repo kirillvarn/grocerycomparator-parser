@@ -322,7 +322,7 @@ def naiveHandleDB(products, shop):
 
 
 def insert_current_products(products: list, shop: str) -> None:
-    DATE = datetime.today().strftime("%Y-%m-%d")
+    inserted_at = datetime.today().strftime("%Y-%m-%d")
     conn = connect(db="naive_products")
     cursor = conn.cursor()
     price = 0
@@ -331,7 +331,7 @@ def insert_current_products(products: list, shop: str) -> None:
         (
             round(cast_to_numeric(entry["price"]), 2) or 0,
             entry["discount"],
-            DATE,
+            inserted_at,
             entry["id"] + shop[0],
             round(cast_to_numeric(entry["price"]), 2) or 0,
 
@@ -340,7 +340,7 @@ def insert_current_products(products: list, shop: str) -> None:
             round(cast_to_numeric(entry["price"]), 2) or 0,
             shop,
             entry["discount"],
-            DATE
+            inserted_at
         )
         for entry in products
     ]
