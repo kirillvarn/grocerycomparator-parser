@@ -362,7 +362,7 @@ def log_products():
     conn = connect(db="naive_products")
     cursor = conn.cursor()
 
-    copy_q = "insert into products (id, name, price, shop, discount, inserted_at) select id, name, price, shop, discount, inserted_at from current_products where inserted_at = %s"
+    copy_q = "insert into products (product_id, name, price, shop, discount, inserted_at) select id, name, price, shop, discount, inserted_at from current_products where inserted_at = %s"
 
     cursor.execute(copy_q, (DATE,))
     conn.commit()
