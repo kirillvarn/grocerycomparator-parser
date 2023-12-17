@@ -2,10 +2,6 @@ from requests_html import HTMLSession
 from requests_html import AsyncHTMLSession
 import asyncio
 
-# db
-from db import handleDB, naiveHandleDB, insert_current_products
-
-
 # if os.name == "nt":
 #     loop = asyncio.ProactorEventLoop()
 #     asyncio.set_event_loop(loop)
@@ -49,7 +45,9 @@ async def getPageData(a_session, url):
     while True:
         p_url = f"{URL + url}?page={str(page)}"
         response_data = await a_session.get(p_url, verify=False)
-        items = response_data.html.find("div.b-product--wrap.clearfix.b-product--js-hook")
+        items = response_data.html.find(
+            "div.b-product--wrap.clearfix.b-product--js-hook"
+        )
         if len(items) == 0:
             break
 
@@ -65,15 +63,6 @@ async def gatherData():
     return await asyncio.gather(*tasks)
 
 
-def main(method):
-
+def get():
     asyncio.run(gatherData())
-    if method == "naive":
-        naiveHandleDB(p_array, "maxima")
-    else:
-        handleDB(p_array, "maxima")
-
-def current_products() -> None:
-
-    asyncio.run(gatherData())
-    insert_current_products(p_array, "maxima")
+    return p_array

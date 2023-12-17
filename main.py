@@ -1,55 +1,23 @@
-import maxima, rimi, selver, prisma
-from colorama import Fore, Style
+from parsers import *
 from threading import Thread
-import multiprocessing as mp
-from db import log_products
-#from apscheduler.events import *
-import time
-#from apscheduler.schedulers.blocking import BlockingScheduler
-#from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
-from datetime import datetime, timedelta
+from db import log_products, insert_current_products
 
-def get_next_event(time: datetime) -> datetime:
-    return time + timedelta(days=1)
-now = datetime.now()
-t = datetime(year=now.year, month=now.month, day=now.day, hour=4)
+from types import ModuleType
 
-if now.hour > 4 or now.hour < 0:
-    t = t + timedelta(days=1)
+PARSERS = [selver, rimi, prisma, maxima, coop]
+
 
 def run():
-    th_list = []
+    threads = [Thread(target=insert, args=[parser]) for parser in PARSERS]
+    for thread in threads:
+        thread.start()
 
-    th_list.append(Thread(target=selver.current_products))
-    th_list.append(Thread(target=rimi.current_products))
-    th_list.append(Thread(target=prisma.current_products))
-    th_list.append(Thread(target=maxima.current_products))
-
-    for i in th_list:
-        i.start()
-
-    for i in th_list:
-        i.join()
+    for thread in threads:
+        thread.join()
 
     log_products()
 
-print(f"Starting parsing at {t}!")
-until_starting = t - now
-seconds_until = (until_starting.seconds) + (until_starting.days * 24 * 60 * 60)
 
-prev_at = t
-next_at = None
-
-time.sleep(seconds_until)
-while True:
-    subprocess = mp.Process(target=run)
-    subprocess.start()
-    subprocess.join()
-    subprocess.terminate()
-
-    next_at = get_next_event(prev_at)
-
-    print(f"{Fore.BLUE}[INFO] Done parsing! Next parsing's at {next_at}{Style.RESET_ALL}")
-    delta_seconds = (next_at - prev_at).days * 24 * 60 * 60
-    time.sleep(delta_seconds)
-
+def insert(module: ModuleType) -> None:
+    products = module.get()
+    insert_current_products(products, module.__name__.replace("parsers.", ""))

@@ -1,9 +1,6 @@
 import asyncio
 import aiohttp
 
-# db
-from db import *
-
 # if os.name == "nt":
 #     loop = asyncio.ProactorEventLoop()
 #     asyncio.set_event_loop(loop)
@@ -17,7 +14,7 @@ headers = {
 
 api_url = "https://www.selver.ee/api/catalog/vue_storefront_catalog_et/product/_search?_source_exclude=configurable_options,description,product_nutr_*,sgn,*.sgn,msrp_display_actual_price_type,*.msrp_display_actual_price_type,required_options&_source_include=documents,activity,configurable_children.attributes,configurable_children.id,configurable_children.final_price,configurable_children.color,configurable_children.original_price,configurable_children.original_price_incl_tax,configurable_children.price,configurable_children.price_incl_tax,configurable_children.size,configurable_children.sku,configurable_children.special_price,configurable_children.special_price_incl_tax,configurable_children.tier_prices,final_price,id,image,name,new,original_price_incl_tax,original_price,price,price_incl_tax,product_links,sale,special_price,special_to_date,special_from_date,special_price_incl_tax,status,tax_class_id,tier_prices,type_id,url_path,url_key,*image,*sku,*small_image,short_description,manufacturer,product_*,extension_attributes.deposit_data,stock,prices,vmo_badges&size=500"
 
-p_array = list()
+products = list()
 
 
 async def getAPIData(session, size):
@@ -32,7 +29,7 @@ async def getAPIData(session, size):
             discount = False
             if item["_source"]["prices"][0]["is_discount"] == True:
                 discount = True
-            p_array.append(
+            products.append(
                 {
                     "id": str(item["_source"]["stock"]["item_id"]),
                     "name": f"{item['_source']['name']}",
@@ -54,15 +51,5 @@ async def gatherData():
 
 
 def main(method):
-
     asyncio.run(gatherData())
-    if method == "naive":
-        naiveHandleDB(p_array, "selver")
-    else:
-        handleDB(p_array, "selver")
-
-
-def current_products() -> None:
-
-    asyncio.run(gatherData())
-    insert_current_products(p_array, "selver")
+    return products
